@@ -2,7 +2,8 @@
 #include "textflag.h"
 
 // func SyncAdd
-TEXT ·SyncAdd(SB), NOSPLIT, $0-24
+// func SyncAdd(addr *int64, delta int64)
+TEXT ·SyncAdd(SB), NOSPLIT, $0-16
     MOVD ptr+0(FP), R0
     MOVD delta+8(FP), R1
     LDADDALD R1, (R0), R2
