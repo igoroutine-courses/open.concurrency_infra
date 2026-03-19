@@ -195,6 +195,10 @@ function arrayEq(a, b) {
   return true
 }
 
+function formatCallReturn(callTime, returnTime) {
+  return '<br><br>Call: ' + callTime + '<br><br>Return: ' + returnTime
+}
+
 // eslint-disable-next-line no-unused-vars, complexity
 function render(data) {
   const PADDING = 10
@@ -231,7 +235,7 @@ function render(data) {
 
   // Add synthetic client numbers
   const tag2ClientId = {}
-  const sortedTags = Array.from(tags).sort()
+  const sortedTags = [...tags].sort()
   for (const tag of sortedTags) {
     maxClient += 1
     tag2ClientId[tag] = maxClient
@@ -270,7 +274,7 @@ function render(data) {
     }
   }
 
-  let sortedTimestamps = Array.from(allTimestamps).sort((a, b) => a - b)
+  let sortedTimestamps = [...allTimestamps].sort((a, b) => a - b)
 
   // If one event has the same end time as another's start time, that means that
   // they are concurrent, and we need to display them with overlap. We do this
@@ -341,7 +345,7 @@ function render(data) {
   }
 
   // Update sortedTimestamps, because we created some new timestamps.
-  sortedTimestamps = Array.from(allTimestamps).sort((a, b) => a - b)
+  sortedTimestamps = [...allTimestamps].sort((a, b) => a - b)
 
   // Compute layout.
   //
@@ -461,14 +465,15 @@ function render(data) {
       // that include that event, for the prefix that comes before that event,
       // all their start points must have been placed already, so we can figure
       // out the minimum width that the box needs to be to accommodate the LP.
-      for (const li of eventToLinearizations[event_.gid].concat(
-        eventIllegalLast[event_.gid].map((index) => {
+      for (const li of [
+        ...eventToLinearizations[event_.gid],
+        ...eventIllegalLast[event_.gid].map((index) => {
           return {
             index,
             position: allLinearizations[index].length - 1,
           }
-        })
-      )) {
+        }),
+      ]) {
         const {index, position} = li
         for (let i = linearizationPositions[index].length; i <= position; i++) {
           // Determine past points
@@ -830,16 +835,31 @@ function render(data) {
         ? linearizationIndex(sPartition, sIndex)
         : linearizationIndex(partition, index)
 
+      const callTime = allData[partition].History[index].OriginalStart
+      const returnTime = allData[partition].History[index].OriginalEnd
+
+      let metadata = ''
+      if (partition < coreHistory.length) {
+        const m = allData[partition].History[index].Metadata
+        if (m !== '') {
+          metadata = m + '<br><br>'
+        }
+      }
+
       if (partition >= coreHistory.length) {
         // Annotation
         const details = annotations[index].Details
         tooltip.innerHTML = details.length === 0 ? '&langle;no details&rangle;' : details
       } else if (selected && sPartition !== partition) {
-        tooltip.innerHTML = 'Not part of selected partition.'
+        tooltip.innerHTML =
+          metadata + 'Not part of selected partition.' + formatCallReturn(callTime, returnTime)
       } else if (maxIndex === null) {
-        tooltip.innerHTML = selected
-          ? 'Selected element is not part of any partial linearization.'
-          : 'Not part of any partial linearization.'
+        tooltip.innerHTML =
+          metadata +
+          (selected
+            ? 'Selected element is not part of any partial linearization.'
+            : 'Not part of any partial linearization.') +
+          formatCallReturn(callTime, returnTime)
       } else {
         const lin = coreHistory[partition].PartialLinearizations[maxIndex]
         let previous = null
@@ -854,36 +874,31 @@ function render(data) {
           }
         }
 
-        const callTime = allData[partition].History[index].OriginalStart
-        const returnTime = allData[partition].History[index].OriginalEnd
-        let message = ''
+        let message = metadata
+
         if (found) {
           // Part of linearization
           if (previous !== null) {
-            message =
+            message +=
               '<strong>Previous state:</strong><br>' + previous.StateDescription + '<br><br>'
           }
 
           message +=
             '<strong>New state:</strong><br>' +
             current.StateDescription +
-            '<br><br>Call: ' +
-            callTime +
-            '<br><br>Return: ' +
-            returnTime
+            formatCallReturn(callTime, returnTime)
         } else if (illegalLast[partition][maxIndex].has(index)) {
           // Illegal next one
-          message =
+          message +=
             '<strong>Previous state:</strong><br>' +
             lin.at(-1).StateDescription +
             '<br><br><strong>New state:</strong><br>&langle;invalid op&rangle;' +
-            '<br><br>Call: ' +
-            callTime +
-            '<br><br>Return: ' +
-            returnTime
+            formatCallReturn(callTime, returnTime)
         } else {
           // Not part of this one
-          message = "Not part of selected element's partial linearization."
+          message +=
+            "Not part of selected element's partial linearization." +
+            formatCallReturn(callTime, returnTime)
         }
 
         tooltip.innerHTML = message
@@ -1016,7 +1031,7 @@ function render(data) {
 }
 
 
-      const data = {"Partitions":[{"History":[{"ClientId":4,"Start":100,"OriginalStart":"1748895284039049000","End":100,"OriginalEnd":"1748895284039049000","Description":"Once() -\u003e '0'"},{"ClientId":2,"Start":200,"OriginalStart":"1748895284039051000","End":200,"OriginalEnd":"1748895284039051000","Description":"Once() -\u003e '0'"},{"ClientId":3,"Start":300,"OriginalStart":"1748895284039052000","End":300,"OriginalEnd":"1748895284039052000","Description":"Once() -\u003e '0'"},{"ClientId":0,"Start":400,"OriginalStart":"1748895284050192000","End":500,"OriginalEnd":"1748895284050193000","Description":"Once() -\u003e '0'"},{"ClientId":1,"Start":0,"OriginalStart":"1748895284039048000","End":600,"OriginalEnd":"1748895287040143000","Description":"Once() -\u003e '27'"}],"PartialLinearizations":[[{"Index":0,"StateDescription":"0"},{"Index":4,"StateDescription":"27"}]],"Largest":{"0":0,"4":0}}],"Annotations":[]}
+      const data = {"Partitions":[{"History":[{"ClientId":1,"Start":0,"OriginalStart":"1773939454885938000","End":200,"OriginalEnd":"1773939457886538000","Description":"Once() -\u003e '27'","Metadata":""},{"ClientId":4,"Start":0,"OriginalStart":"1773939454885938000","End":300,"OriginalEnd":"1773939457886553000","Description":"Once() -\u003e '27'","Metadata":""},{"ClientId":2,"Start":0,"OriginalStart":"1773939454885938000","End":400,"OriginalEnd":"1773939457886554000","Description":"Once() -\u003e '27'","Metadata":""},{"ClientId":3,"Start":0,"OriginalStart":"1773939454885938000","End":500,"OriginalEnd":"1773939457886555000","Description":"Once() -\u003e '27'","Metadata":""},{"ClientId":0,"Start":100,"OriginalStart":"1773939454896961000","End":600,"OriginalEnd":"1773939457886557000","Description":"Once() -\u003e '27'","Metadata":""}],"PartialLinearizations":[[{"Index":0,"StateDescription":"27"},{"Index":1,"StateDescription":"27"},{"Index":2,"StateDescription":"27"},{"Index":3,"StateDescription":"27"},{"Index":4,"StateDescription":"27"}]],"Largest":{"0":0,"1":0,"2":0,"3":0,"4":0}}],"Annotations":[]}
 
       render(data)
     </script>

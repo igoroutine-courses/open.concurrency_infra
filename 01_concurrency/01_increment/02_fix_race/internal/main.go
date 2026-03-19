@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"runtime"
 	"time"
 )
 
@@ -16,15 +15,13 @@ func main() {
 	var v int64
 
 	for range 1000 {
-		// Пока для простоты можно думать, что goroutine == os thread
 		go func() {
-			runtime.LockOSThread()
-			defer runtime.UnlockOSThread()
-
 			SyncAdd(&v, 1) // v++
 		}()
 	}
 
+	// 1000
+
 	time.Sleep(time.Second * 5)
-	fmt.Println(v) // TODO: wait group
+	fmt.Println(v)
 }

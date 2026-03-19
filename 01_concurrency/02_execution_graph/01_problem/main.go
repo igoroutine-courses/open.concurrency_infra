@@ -2,15 +2,13 @@ package main
 
 import (
 	"fmt"
-	"runtime"
 	"sync"
 )
 
-// Observed outcomes:
-// (1, 0): 590166 times
-// (0, 1): 389059 times
-// (0, 0): 20773 times
-// (1, 1): 2 times
+// (1, 0): 989248 times
+// (0, 1): 10481 times
+// (0, 0): 270 times
+// (1, 1): 1 times
 
 func main() {
 	var (
@@ -19,10 +17,6 @@ func main() {
 	)
 
 	const iterations = 1_000_000
-
-	runtime.LockOSThread()
-	defer runtime.UnlockOSThread()
-
 	for i := 0; i < iterations; i++ {
 		var x, y int32
 		var r1, r2 int32

@@ -42,6 +42,6 @@ func (m *Map) Add(key, value any) {
 
 func (m *Map) init() {
 	m.once.Do(func() {
-		m.values = make(map[any]any) // G1
+		m.values = make(map[any]any)
 	})
 }

@@ -14,7 +14,7 @@ const cacheLineSize = unsafe.Sizeof(cpu.CacheLinePad{})
 
 // false sharing
 // [1],   [2],   [3]
-// Core1           Core2  Core3
+// Core1  Core2  Core3
 
 // [1.........],   [2],   [3]
 // Core1           Core2  Core3

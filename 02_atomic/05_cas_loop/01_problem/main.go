@@ -19,7 +19,6 @@ func StoreMax(
 			return
 		}
 
-		// not atomic, need casn or lock
 		if atomic.CompareAndSwapInt64(addr1, old1, candidate1) &&
 			atomic.CompareAndSwapInt64(addr2, old2, candidate2) &&
 			atomic.CompareAndSwapInt64(addr3, old3, candidate3) {

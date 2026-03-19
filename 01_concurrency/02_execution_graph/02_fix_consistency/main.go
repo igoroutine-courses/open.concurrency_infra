@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"runtime"
 	"sync"
 )
 
@@ -19,6 +18,11 @@ func SyncRead(addr *int64) (val int64)
 //go:noinline
 func SyncWrite(addr *int64, val int64)
 
+// Observed outcomes:
+// (0, 1): 475319 times
+// (1, 0): 524540 times
+// (1, 1): 141 times
+
 func main() {
 	var (
 		wg      sync.WaitGroup
@@ -26,9 +30,6 @@ func main() {
 	)
 
 	const iterations = 1_000_000
-
-	runtime.LockOSThread()
-	defer runtime.UnlockOSThread()
 
 	for i := 0; i < iterations; i++ {
 		var x, y int64

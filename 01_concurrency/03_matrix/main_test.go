@@ -56,6 +56,7 @@ func BenchmarkAdd(b *testing.B) {
 	// why?
 	// BenchmarkAdd/par/w=120-12            837           1400609 ns/op        33565177 B/op        243 allocs/op
 	// BenchmarkAdd/par/w=1200-12           642           1873310 ns/op        33660769 B/op       2404 allocs/op
+
 	for _, workers := range []int{1, 2, 4, 8, runtime.NumCPU(), runtime.NumCPU() * 3, runtime.NumCPU() * 10,
 		runtime.NumCPU() * 100} {
 		b.Run("par/w="+strconv.Itoa(workers), func(b *testing.B) {

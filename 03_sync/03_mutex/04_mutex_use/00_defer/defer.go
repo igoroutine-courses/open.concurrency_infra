@@ -13,7 +13,7 @@ func main() {
 
 // see sync.Locker
 // foo
-func withLock(mx *sync.Mutex, action func()) {
+func withLock(mx sync.Locker, action func()) {
 	mx.Lock()
 	defer mx.Unlock()
 

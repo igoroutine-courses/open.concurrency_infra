@@ -17,8 +17,6 @@ func main() {
 		}()
 	}
 
-	time.Sleep(time.Minute) // need wg
-
-	//fmt.Println(atomic.LoadInt32(&n)) // 1000
+	time.Sleep(time.Minute)
 	fmt.Println(n)
 }

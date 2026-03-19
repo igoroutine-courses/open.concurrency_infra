@@ -16,8 +16,9 @@ type Client struct {
 func bankTransfer(left, right Client) {
 	firstMx, secondMx := left.mx, right.mx
 
-	// G1 left = 1 (OK), right = 2
-	// G2 left = 2, right = 1
+	if left.id > right.id {
+		firstMx, secondMx = secondMx, firstMx
+	}
 
 	firstMx.Lock()
 	defer firstMx.Unlock()

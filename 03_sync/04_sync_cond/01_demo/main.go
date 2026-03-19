@@ -33,23 +33,18 @@ func main() {
 	data := map[string]string{}
 	cond := sync.NewCond(&sync.Mutex{})
 
-	wg := sync.WaitGroup{}
-	wg.Add(3)
-
-	go func() {
-		defer wg.Done()
+	wg := new(sync.WaitGroup)
+	wg.Go(func() {
 		subscribe("subscriber_1", data, cond)
-	}()
+	})
 
-	go func() {
-		defer wg.Done()
+	wg.Go(func() {
 		subscribe("subscriber_2", data, cond)
-	}()
+	})
 
-	go func() {
-		defer wg.Done()
+	wg.Go(func() {
 		publish("publisher", data, cond)
-	}()
+	})
 
 	wg.Wait()
 }

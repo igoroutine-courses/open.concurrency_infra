@@ -8,8 +8,6 @@ import (
 	"sync/atomic"
 )
 
-// sync.WaitGroup{}
-
 // see sync.runtime_SemacquireWaitGroup, go linkname restricted
 func runtime_SemacquireWaitGroup(addr *uint32) {}
 

@@ -1,8 +1,8 @@
 package main
 
 import (
-	"runtime"
 	"sync/atomic"
+	"time"
 )
 
 var lock = new(SpinLock)
@@ -18,17 +18,17 @@ func StoreMax(
 	lock.Lock()
 	defer lock.Unlock()
 
-	old1 := atomic.LoadInt64(addr1)
-	old2 := atomic.LoadInt64(addr2)
-	old3 := atomic.LoadInt64(addr3)
+	old1 := *addr1
+	old2 := *addr2
+	old3 := *addr3
 
 	if candidate1 <= old1 && candidate2 <= old2 && candidate3 <= old3 {
 		return
 	}
 
-	atomic.StoreInt64(addr1, candidate1)
-	atomic.StoreInt64(addr2, candidate2)
-	atomic.StoreInt64(addr3, candidate3)
+	*addr1 = candidate1
+	*addr2 = candidate2
+	*addr3 = candidate3
 }
 
 const (
@@ -41,12 +41,8 @@ type SpinLock struct {
 }
 
 func (s *SpinLock) Lock() {
-	for {
-		if s.state.CompareAndSwap(unlocked, locked) {
-			return
-		}
-
-		runtime.Gosched()
+	for !s.state.CompareAndSwap(unlocked, locked) {
+		time.Sleep(time.Millisecond * 10)
 	}
 }
 

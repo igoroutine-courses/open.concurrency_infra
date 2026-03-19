@@ -7,6 +7,7 @@ import (
 
 type MyData struct {
 	x int
+	_ [1016]int
 }
 
 func main() {

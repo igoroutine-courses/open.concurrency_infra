@@ -17,12 +17,8 @@ type spinLockOptimized struct {
 }
 
 func (s *spinLockOptimized) Lock() {
-	for {
-		if s.state.CompareAndSwap(unlocked, locked) {
-			return
-		}
-
-		runtime.Gosched() // time.Sleep
+	for !s.state.CompareAndSwap(unlocked, locked) {
+		runtime.Gosched() // aka time.Sleep
 	}
 }
 

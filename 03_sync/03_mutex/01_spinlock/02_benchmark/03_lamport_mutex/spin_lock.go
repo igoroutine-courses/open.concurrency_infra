@@ -21,10 +21,7 @@ type spinLock struct {
 }
 
 func (s *spinLock) Lock() {
-	for {
-		if s.state.CompareAndSwap(unlocked, locked) {
-			return
-		}
+	for !s.state.CompareAndSwap(unlocked, locked) {
 	}
 }
 
