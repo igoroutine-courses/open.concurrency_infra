@@ -1,0 +1,11 @@
+version: '3'
+
+tasks:
+  generate:
+    desc: Pull main, update all branches, and rebase on main
+    cmds:
+      - |
+        go run generator.go
+        cat ammo_template.txt | python3 ./script.py > ammo.txt
+        
+        echo 'Successfully generated'
